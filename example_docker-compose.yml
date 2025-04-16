@@ -25,7 +25,7 @@ services:
     ports:
       - <host>:<container> # only required if game needs
     environment:
-      - NETWORK_TO_JOIN=<changeme>
+      - ZEROTIER_JOIN_NETWORKS=<changeme>
     volumes:
       - <chanegme>/zerotier:/var/lib/zerotier-one
     cap_add:
@@ -33,23 +33,6 @@ services:
       - SYS_ADMIN
     devices:
       - /dev/net/tun
-    command:
-      - sh
-      - -c
-      - |
-        if [ -z \\$NETWORK_TO_JOIN ]; then
-          echo "you need to supply the NETWORK_TO_JOIN env variable!"
-          exit 1;
-        fi
-
-        zerotier-one -d
-        while [ ! -f /var/lib/zerotier-one/zerotier-one.port ]; do
-          echo "Waiting for ZeroTier service..."
-          sleep 1
-        done
-        sleep 2
-        zerotier-cli join \\$NETWORK_TO_JOIN
-        tail -f /dev/null
     healthcheck:
       test:
         - CMD-SHELL

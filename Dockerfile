@@ -47,3 +47,8 @@ ADD --chown=${USER}:${USER} run-game.sh /
 
 RUN chmod +x /run-game.sh
 ENTRYPOINT [ "/run-game.sh" ]
+
+# Labels & metadata
+LABEL org.opencontainers.image.source=https://github.com/crowz-fx/headless-game-server-steam
+LABEL org.opencontainers.image.description="Run your steam games headless when a multiplayer server is required (like Dyson Sphere)"
+LABEL org.opencontainers.image.licenses=MIT
