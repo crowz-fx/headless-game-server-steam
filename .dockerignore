@@ -1,0 +1,6 @@
+*.md
+.git*
+game/
+save/
+zerotier/
+docker-compose.yml

@@ -1,0 +1,60 @@
+services:
+  headless-game-server-steam:
+    image: headless-game-server-steam
+    container_name: ghcr.io/crowz-fx/headless-game-server-steam:latest
+    network_mode: service:zerotier
+    environment:
+      - SLEEP_TIME=20
+      - GAME_RUN_COMMAND=sleep 100000000
+    volumes:
+      - <changeme>/game:/home/ubuntu/.wine/drive_c/users/ubuntu/Documents/<game>:rw
+    deploy:
+      resources:
+        limits:
+          cpus: 2
+          memory: 4gb
+        reservations:
+          cpus: 1
+          memory: 2gb
+  zerotier:
+    container_name: zerotier
+    image: zerotier/zerotier:latest
+    network_mode: host
+    restart: unless-stopped
+    privileged: true
+    ports:
+      - <host>:<container> # only required if game needs
+    environment:
+      - NETWORK_TO_JOIN=<changeme>
+    volumes:
+      - <chanegme>/zerotier:/var/lib/zerotier-one
+    cap_add:
+      - NET_ADMIN
+      - SYS_ADMIN
+    devices:
+      - /dev/net/tun
+    command:
+      - sh
+      - -c
+      - |
+        if [ -z \\$NETWORK_TO_JOIN ]; then
+          echo "you need to supply the NETWORK_TO_JOIN env variable!"
+          exit 1;
+        fi
+
+        zerotier-one -d
+        while [ ! -f /var/lib/zerotier-one/zerotier-one.port ]; do
+          echo "Waiting for ZeroTier service..."
+          sleep 1
+        done
+        sleep 2
+        zerotier-cli join \\$NETWORK_TO_JOIN
+        tail -f /dev/null
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - zerotier-cli info || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 10
+networks: {}
