@@ -1,7 +1,7 @@
 services:
   headless-game-server-steam:
-    image: headless-game-server-steam
-    container_name: ghcr.io/crowz-fx/headless-game-server-steam:latest
+    image: ghcr.io/crowz-fx/headless-game-server-steam:latest
+    container_name: headless-game-server-steam
     network_mode: service:zerotier
     environment:
       - SLEEP_TIME=20
@@ -22,12 +22,10 @@ services:
     network_mode: host
     restart: unless-stopped
     privileged: true
-    ports:
-      - <host>:<container> # only required if game needs
     environment:
       - ZEROTIER_JOIN_NETWORKS=<changeme>
     volumes:
-      - <chanegme>/zerotier:/var/lib/zerotier-one
+      - <changeme>/zerotier:/var/lib/zerotier-one
     cap_add:
       - NET_ADMIN
       - SYS_ADMIN
@@ -40,4 +38,3 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
-networks: {}
